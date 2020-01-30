@@ -5,14 +5,23 @@
 using IdentityServer4;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer
 {
     public class Startup
     {
+        private readonly IConfiguration configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
@@ -25,24 +34,19 @@ namespace IdentityServer
 
             builder.AddDeveloperSigningCredential();
 
-            services.AddAuthentication()
-                .AddGoogle("Google", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            var azureAdConfig = configuration.GetSection("AzureAD").Get<AzureADConfiguration>();
 
-                    options.ClientId = "<insert here>";
-                    options.ClientSecret = "<insert here>";
-                })
-                .AddOpenIdConnect("oidc", "Demo IdentityServer", options =>
+            services.AddAuthentication()
+                .AddOpenIdConnect("oidc", "Sign in with AzureAD", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
                     options.SaveTokens = true;
 
-                    options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "native.code";
-                    options.ClientSecret = "secret";
-                    options.ResponseType = "code";
+                    options.Authority = string.Format("https://login.microsoftonline.com/{0}", azureAdConfig.TenantId);
+                    options.ClientId = azureAdConfig.ClientId;
+                    options.ClientSecret = azureAdConfig.ClientSecret;
+                    options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -56,7 +60,7 @@ namespace IdentityServer
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();                
             }
 
             app.UseStaticFiles();

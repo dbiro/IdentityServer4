@@ -21,7 +21,7 @@ namespace IdentityServer
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource("api1", "My API", new string[] { "https://nexogen.com" })
             };
 
         public static IEnumerable<Client> Clients =>
@@ -68,7 +68,7 @@ namespace IdentityServer
                     ClientId = "js",
                     ClientName = "JavaScript Client",
                     AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
+                    RequirePkce = false,
                     RequireClientSecret = false,
 
                     RedirectUris =           { "http://localhost:5003/callback.html" },

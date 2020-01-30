@@ -104,6 +104,12 @@ namespace IdentityServer
             var (user, provider, providerUserId, claims) = FindUserFromExternalProvider(result);
             if (user == null)
             {
+                // add custom claims
+                var copyOfClaims = claims.ToList();
+                copyOfClaims.Add(new Claim("https://nexogen.com", "nexogen_claim"));
+
+                claims = copyOfClaims;
+
                 // this might be where you might initiate a custom workflow for user registration
                 // in this sample we don't show how that would be done, as our sample implementation
                 // simply auto-provisions new external user
