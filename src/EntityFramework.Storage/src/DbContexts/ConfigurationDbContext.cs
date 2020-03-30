@@ -60,6 +60,7 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// The clients.
         /// </value>
         public DbSet<Client> Clients { get; set; }
+
         /// <summary>
         /// Gets or sets the identity resources.
         /// </summary>
@@ -67,6 +68,7 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// The identity resources.
         /// </value>
         public DbSet<IdentityResource> IdentityResources { get; set; }
+
         /// <summary>
         /// Gets or sets the API resources.
         /// </summary>
@@ -76,13 +78,12 @@ namespace IdentityServer4.EntityFramework.DbContexts
         public DbSet<ApiResource> ApiResources { get; set; }
 
         /// <summary>
-        /// Saves the changes.
+        /// Gets or sets the API scopes.
         /// </summary>
-        /// <returns></returns>
-        public Task<int> SaveChangesAsync()
-        {
-            return base.SaveChangesAsync();
-        }
+        /// <value>
+        /// The API resources.
+        /// </value>
+        public DbSet<ApiScope> ApiScopes { get; set; }
 
         /// <summary>
         /// Override this method to further configure the model that was discovered by convention from the entity types

@@ -154,7 +154,7 @@ namespace IdentityServer4.ResponseHandling
                 if (Options.MutualTls.Enabled)
                 {
                     var mtlsEndpoints = new Dictionary<string, string>();
-                    
+
                     if (Options.Endpoints.EnableTokenEndpoint)
                     {
                         mtlsEndpoints.Add(OidcConstants.Discovery.TokenEndpoint, ConstructMtlsEndpoint(Constants.ProtocolRoutePaths.Token));
@@ -175,8 +175,8 @@ namespace IdentityServer4.ResponseHandling
                     if (mtlsEndpoints.Any())
                     {
                         entries.Add(OidcConstants.Discovery.MtlsEndpointAliases, mtlsEndpoints);
-                    }    
-                        
+                    }
+
                     string ConstructMtlsEndpoint(string endpoint)
                     {
                         // path based
@@ -228,8 +228,7 @@ namespace IdentityServer4.ResponseHandling
 
                 if (Options.Discovery.ShowApiScopes)
                 {
-                    var apiScopes = from api in resources.ApiResources
-                                    from scope in api.Scopes
+                    var apiScopes = from scope in resources.ApiScopes
                                     where scope.ShowInDiscoveryDocument
                                     select scope.Name;
 
@@ -249,20 +248,8 @@ namespace IdentityServer4.ResponseHandling
 
                     // add non-hidden identity scopes related claims
                     claims.AddRange(resources.IdentityResources.Where(x => x.ShowInDiscoveryDocument).SelectMany(x => x.UserClaims));
-
-                    // add non-hidden api scopes related claims
-                    foreach (var resource in resources.ApiResources)
-                    {
-                        claims.AddRange(resource.UserClaims);
-
-                        foreach (var scope in resource.Scopes)
-                        {
-                            if (scope.ShowInDiscoveryDocument)
-                            {
-                                claims.AddRange(scope.UserClaims);
-                            }
-                        }
-                    }
+                    claims.AddRange(resources.ApiResources.Where(x => x.ShowInDiscoveryDocument).SelectMany(x => x.UserClaims));
+                    claims.AddRange(resources.ApiScopes.Where(x => x.ShowInDiscoveryDocument).SelectMany(x => x.UserClaims));
 
                     entries.Add(OidcConstants.Discovery.ClaimsSupported, claims.Distinct().ToArray());
                 }
@@ -328,7 +315,7 @@ namespace IdentityServer4.ResponseHandling
             if (signingCredentials.Any())
             {
                 var signingAlgorithms = signingCredentials.Select(c => c.Algorithm).Distinct();
-                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, signingAlgorithms );
+                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, signingAlgorithms);
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
@@ -383,7 +370,7 @@ namespace IdentityServer4.ResponseHandling
         public virtual async Task<IEnumerable<Models.JsonWebKey>> CreateJwkDocumentAsync()
         {
             var webKeys = new List<Models.JsonWebKey>();
-            
+
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
                 if (key.Key is X509SecurityKey x509Key)
@@ -483,7 +470,7 @@ namespace IdentityServer4.ResponseHandling
                         n = jsonWebKey.N,
                         x5c = jsonWebKey.X5c?.Count == 0 ? null : jsonWebKey.X5c.ToArray(),
                         alg = jsonWebKey.Alg,
-
+                        crv = jsonWebKey.Crv,
                         x = jsonWebKey.X,
                         y = jsonWebKey.Y
                     };

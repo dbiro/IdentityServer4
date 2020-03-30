@@ -1,7 +1,7 @@
 ﻿/// <reference path="libs/oidc-client.js" />
 
 var config = {
-    authority: "http://localhost:5000/",
+    authority: "https://localhost:5001/",
     client_id: "js_oidc",
     redirect_uri: window.location.origin + "/callback.html",
     post_logout_redirect_uri: window.location.origin + "/index.html",
@@ -13,7 +13,7 @@ var config = {
     // these two will be done dynamically from the buttons clicked, but are
     // needed if you want to use the silent_renew
     response_type: "code",
-    scope: "openid profile email api1 api2.read_only",
+    scope: "openid profile email feature1 feature2",
 
     // this will toggle if profile endpoint is used
     loadUserInfo: true,
@@ -104,7 +104,7 @@ function callApi() {
                 display("#ajax-result", xhr.response);
             }
         };
-        xhr.open("GET", "http://localhost:3721/identity", true);
+        xhr.open("GET", "https://localhost:5005/identity", true);
         xhr.setRequestHeader("Authorization", "Bearer " + user.access_token);
         xhr.send();
     });

@@ -274,6 +274,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddJwtBearerClientAuthentication(this IIdentityServerBuilder builder)
         {
+            builder.Services.TryAddTransient<IReplayCache, DefaultReplayCache>();
             builder.AddSecretParser<JwtBearerClientAssertionSecretParser>();
             builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
 
@@ -399,6 +400,22 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : class, IAuthorizationParametersMessageStore
         {
             builder.Services.AddTransient<IAuthorizationParametersMessageStore, T>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a custom user session.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddUserSession<T>(this IIdentityServerBuilder builder)
+            where T : class, IUserSession
+        {
+            // This is added as scoped due to the note regarding the AuthenticateAsync
+            // method in the IdentityServer4.Services.DefaultUserSession implementation.
+            builder.Services.AddScoped<IUserSession, T>();
 
             return builder;
         }
