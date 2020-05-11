@@ -18,15 +18,24 @@ document.getElementById("login").addEventListener("click", login, false);
 document.getElementById("api").addEventListener("click", api, false);
 document.getElementById("logout").addEventListener("click", logout, false);
 
+Oidc.Log.logger = console;
+
 var config = {
     authority: "http://localhost:5000",
     client_id: "js",
     redirect_uri: "http://localhost:5003/callback.html",
     response_type: "code",
-    scope:"openid profile api1",
-    post_logout_redirect_uri : "http://localhost:5003/index.html",
+    scope:"openid profile offline_access api1",
+    post_logout_redirect_uri: "http://localhost:5003/index.html",
+    accessTokenExpiringNotificationTime: 10,
+    automaticSilentRenew: true,
+    silent_redirect_uri: "http://localhost:5003/silent-renew.html"
 };
 var mgr = new Oidc.UserManager(config);
+
+mgr.events.addAccessTokenExpiring(function () {
+    console.log("token expiring...");
+});
 
 mgr.getUser().then(function (user) {
     if (user) {

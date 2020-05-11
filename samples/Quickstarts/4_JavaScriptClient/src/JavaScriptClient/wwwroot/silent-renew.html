@@ -1,0 +1,16 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script src="oidc-client.js"></script>
+    <script>
+        new UserManager().signinSilentCallback()
+            .catch((err) => {
+                console.log(err);
+            });        
+    </script>
+</body>
+</html>

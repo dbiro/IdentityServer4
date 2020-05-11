@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace IdentityServer
 {
@@ -33,43 +34,43 @@ namespace IdentityServer
                 .AddInMemoryIdentityResources(Config.Ids)
                 .AddInMemoryApiResources(Config.Apis)
                 .AddInMemoryClients(Config.Clients)
-                .AddTestUsers(TestUsers.Users);
+                .AddTestUsers(TestUsers.Users);                        
 
             builder.AddDeveloperSigningCredential();
 
             var azureAdConfig = configuration.GetSection("AzureAD").Get<AzureADConfiguration>();
 
             services.AddAuthentication()
-            //.AddAzureAD(AzureADDefaults.AuthenticationScheme, AzureADDefaults.OpenIdScheme, , AzureADDefaults.DisplayName, options =>
-            //.AddAzureAD(options =>
-            //{
-            //    options.ClientId = azureAdConfig.ClientId;
-            //    options.ClientSecret = azureAdConfig.ClientSecret;
-            //    options.CallbackPath = "/signin-oidc";
-            //    options.Instance = "https://login.microsoftonline.com";
-            //    //options.TenantId = "common";
-            //    options.TenantId = azureAdConfig.TenantId;
-            //    options.CookieSchemeName = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-            //});
-            .AddOpenIdConnect("oidc", "Sign in with AzureAD", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-                options.SaveTokens = true;
-
-                options.Authority = string.Format("https://login.microsoftonline.com/{0}", azureAdConfig.TenantId);
-                //options.Authority = "https://login.microsoftonline.com/common";
-                options.ClientId = azureAdConfig.ClientId;
-                options.ClientSecret = azureAdConfig.ClientSecret;
-                options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-
-                options.TokenValidationParameters = new TokenValidationParameters
+                //.AddAzureAD(AzureADDefaults.AuthenticationScheme, AzureADDefaults.OpenIdScheme, , AzureADDefaults.DisplayName, options =>
+                //.AddAzureAD(options =>
+                //{
+                //    options.ClientId = azureAdConfig.ClientId;
+                //    options.ClientSecret = azureAdConfig.ClientSecret;
+                //    options.CallbackPath = "/signin-oidc";
+                //    options.Instance = "https://login.microsoftonline.com";
+                //    //options.TenantId = "common";
+                //    options.TenantId = azureAdConfig.TenantId;
+                //    options.CookieSchemeName = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                //});
+                .AddOpenIdConnect("oidc", "Sign in with AzureAD", options =>
                 {
-                    ValidateIssuer = false,
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                };
-            });
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                    options.SaveTokens = true;
+
+                    options.Authority = string.Format("https://login.microsoftonline.com/{0}", azureAdConfig.TenantId);
+                    //options.Authority = "https://login.microsoftonline.com/common";
+                    options.ClientId = azureAdConfig.ClientId;
+                    options.ClientSecret = azureAdConfig.ClientSecret;
+                    options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                });                
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -17,11 +17,19 @@ namespace IdentityServer
                 new IdentityResources.Profile(),
             };
 
+        private static ApiResource CreateApiResource()
+        {
+            var ar = new ApiResource("api1", "My API", new string[] { "https://nexogen.com" });
+            //ar.Scopes = new List<Scope>();
+            //ar.Scopes.Add(new Scope("api1.foo"));
+            //ar.Scopes.Add(new Scope("api1.bar"));
+            return ar;
+        }
 
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
-                new ApiResource("api1", "My API", new string[] { "https://nexogen.com" })
+                CreateApiResource()
             };
 
         public static IEnumerable<Client> Clients =>
@@ -59,7 +67,7 @@ namespace IdentityServer
                         IdentityServerConstants.StandardScopes.Profile,
                         "api1"
                     },
-                    
+
                     AllowOfflineAccess = true
                 },
                 // JavaScript Client
@@ -70,6 +78,10 @@ namespace IdentityServer
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = false,
                     RequireClientSecret = false,
+                    RequireConsent = false,
+                    AccessTokenLifetime = 30,
+                    RefreshTokenUsage = TokenUsage.ReUse,
+                    AllowOfflineAccess = true,
 
                     RedirectUris =           { "http://localhost:5003/callback.html" },
                     PostLogoutRedirectUris = { "http://localhost:5003/index.html" },
@@ -79,7 +91,8 @@ namespace IdentityServer
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        "api1"                        
                     }
                 }
             };
