@@ -79,9 +79,11 @@ namespace IdentityServer
                     RequirePkce = false,
                     RequireClientSecret = false,
                     RequireConsent = false,
-                    AccessTokenLifetime = 30,
+                    AccessTokenLifetime = 3600,
                     RefreshTokenUsage = TokenUsage.ReUse,
                     AllowOfflineAccess = true,
+
+                    EnableLocalLogin = true,
 
                     RedirectUris =           { "http://localhost:5003/callback.html" },
                     PostLogoutRedirectUris = { "http://localhost:5003/index.html" },
